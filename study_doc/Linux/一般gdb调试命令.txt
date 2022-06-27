@@ -1,0 +1,113 @@
+GDB调试
+
+应用范围，可以调试C，C++，Go，java，objective-c，PHP等语言。
+
+功能：
+	按照自定义的方式启动运行需要调试的程序，
+	使用指定位置和条件表达式来设置断点，
+	程序暂停，监控参数的值，
+	动态改变程序的执行环境。
+
+基本命令操作（常用）
+	run  重新开始运行文件  r
+	start 单步执行，运行程序，停在第一执行语句 
+	list  查看源代码，简写l
+	set  设置变量的值 
+	next  单步调试（逐过程，函数直接执行）  n
+	step  单步调试（逐语句，跳入自定义函数内部执行）  s
+	backtrace  查看函数的调用栈帧和层级关系  bt
+	frame  切换函数的栈帧   f
+	info  产看函数内部局部变量的值   i
+	finish  结束当前函数，返回到函数调用点
+	continue  继续运行   c
+	print  打印值及地址  p
+	quit   退出gdb   q
+
+其他内部命令可以在gdb环境下输入help进行查看
+
+局限性：
+需要调试程序的时候，需要程序在编译的时候使用gdb调试程序，否则不能使用gdb进行调试
+例如C/C++程序，在使用gcc编译的时候需要加入参数“-g”。
+检验程序是否有gdb调试功能
+	gdb processname 先进行尝试，或者直接使用readelf -S progressname | grep debug查看，有debug前缀说明有gdb调试功能。
+
+调试方式
+方式一：
+	gdb progressname直接进入本process的调试环境
+方式二：
+	先进入gdb环境，然后使用file processname 转载process文件
+（假如程序带有参数，则在启动运行前加上参数）
+	gdb -q name --表示不打印gdb版本信息
+
+调试core文件：
+	CoreDump内存溢出（段错误）。
+生成Core的方法：
+	产生coredump的条件，需要输入ulimit -c进行确认，若为0，则不会产生对应的coredump，需要用ulimit -c unlimited解除限制。
+更改coredump文件生成的路径
+	由于coredump文件默认会在生成程序的工作目录里面，可以自定义一个文件目录来存放core文件。
+	echo  /targitdir/core.%e.%p> /workpath
+	%e表示程序名，%p表示进程id
+
+gdb调试core过程中，可以直接gdb ./corename或者在gdb环境下core-file corename
+bt命令就可以查看函数调用的栈帧和层级关系。
+
+断点设置
+	break（b） 行号  --值得注意的是，该行的代码不会被执行。
+假如程序采用c或者c++实现的，可以使用【文件名：行号】的形式设置断点
+通过函数设置断点：
+	break（b） 函数名  --注意的是断点设置在函数开始处，实际调试中并未执行该函数。
+设置条件断点：
+	基于断点的基本形式后面增加if条件语句
+ex.  break（b） test.c:6 if num>0  --当num大于0的时候，程序会在第六行断住。
+查看断点：
+	info breakpoints
+删除断点：
+	delete breakpoint（表示断点的编号，通过上一条命令可以查看）
+
+查看源码：
+	list（l） 接着上一次list命令，输出下面的内容
+指定行号查看源码
+	list  start，end
+列出指定文件的源码
+	list 文件名加行号或者函数名
+
+
+单步调试与查看变量
+单步执行  
+	step，一条一条语句的执行，可以跟踪到函数内部
+	next，在程序断住后继续执行下一条语句
+	until，跳出一个循环体
+	unitl 行号，运行至某行
+	continue，继续执行程序直到到达下一个断点
+	skip，跳过执行，skip function name，程序执行过程中不会进入该函数  删除skip，skip delete [num]
+	call 函数（参数），调用程序中可见的函数，并传递参数
+
+
+查看变量
+print 变量名
+	print 文件名::变量名
+查看变量类型
+	whatis 变量名
+查看指针
+	print 指针名  --现在是查看指针的地址
+	print *指针名  --查看指针的第一个值，假如需要打印多个值，需要后面跟上@并加上要打印的长度。或者@后面跟上变量值。
+$可以表示上一个变量，在调试链表的时候经常用到
+ex.  p *linkNode  表示linkNode节点内容
+	 p *$.next    表示linkNode节点的下一个节点内容
+
+display 表达式 --在每一次单步进行指令后，紧接着输出被设置的表达式及值
+
+设置观察点
+watch 变量名
+	当变量的值发生改变的时候，就会打印相关的内容。
+	
+layout：用于分割窗口，可以一边查看代码，一边测试：
+layout src：显示源代码窗口
+layout asm：显示反汇编窗口
+layout regs：显示源代码/反汇编和CPU寄存器窗口
+layout split：显示源代码和反汇编窗口
+Ctrl + L：刷新窗口
+
+
+thread info 显示线程情况
+thread +id 查看具体情况

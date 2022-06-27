@@ -1,0 +1,16 @@
+java后端基本架构图
+--common     --通用定义信息
+  --config     --配置信息
+  --constant   --固定常量
+  --utils      --通用方法
+--controller --对外接口，外界交互
+--mapper     --操作数据库（数据库相关的基操接口）
+--model      --对象类、数据库类、自定义数据对象类
+--service    --接口定义、方法实现
+  --impl       --方法实现
+  --接口定义类
+
+
+  
+--resource   --静态资源库
+  --mapper     --sql联动查询

@@ -1,0 +1,79 @@
+-----------C语言 String 字符串处理-------------
+
+#字符串复制，n表示限制长度
+strncpy(a,b,5)
+a[5]='\0'
+
+#memset初始化
+char a[10]
+memset(a,'#',sizeof(a));
+a[10]='\0'
+
+#String len
+strlen(a)  -- length didn'n include '\0'  
+
+#String compare
+strcmp(str1,str2)
+strncmp(str1,str2,n)  -- compare the pre n lengths
+
+#追加
+strcat(str1,str2)
+strncat(str1,str2,n)  ---n表示把str2前n个追加给str1，但是末尾不加'\0'
+
+#替换
+strcpy(str1,str2)
+strncpy(str1,str2,n)   --n表示把str2前n个复制给str1，在最后面加'\0'
+
+------------ C语言 整形 字符类型相互转化 ----------
+#整形转化为字符串类型
+itoa(int,str,10)  -- 10表示10进制转化，该函数只在windows下有，linux下并没有
+sprintf(char *s,const char,...)
+ex.  sprint(str,"%d %d",123,456);
+str = "123 456";
+
+#字符串转整形
+atoi(str) -- 将str转化为int
+
+
+--------------C语言 内存 操作函数------------------
+
+#内存复制
+memcpy(void* dest,const void* src, size_t num)  --内存拷贝，不考虑'\0'
+-- 函数在遇到'\0'不会停止
+-- 如果src与dest有内存空间重叠，则复制结果都是未定义
+
+memmove(dest, src, num) -- 内存移动，内存空间可重叠
+
+memcpy(buf1,buf2,num) --比较内存区域buf1和buf2的前num个字节
+-- buf1<buf2 return <0; = return =0 ;> return >0
+
+memchr(buf,ch,num) --从buf指向的内存区域的前num个字节查找字符ch
+--return the first one adress ，if has none， return NULL
+
+memset(str, value, num)  --按字节设置，进行赋值
+-- 以str的起始位置开始的前n个字节的内存空间用整数value填充
+-- return str address
+-- memset用来对一段内存空间全部设置为某个字符，一般用在对定义的字符串进行初始化为‘ ’或‘/0’
+-- 如果用malloc分配的内存，一般只能使用memset来初始化
+-- memset可以方便的清空一个结构类型的变量或数组,它可以一字节一字节地把整个数组设置为一个指定的值
+
+---------------C语言 内存分配 函数--------------------
+#静态开辟地址空间
+数组定义   -- 开辟的内存是在栈中开辟的固定大小的
+
+#动态开辟空间  -- 分配失败皆返回NULL，建议使用前对指针判空
+malloc(size) 
+-- 向堆空间申请一片连续可用的内存空间
+-- return 指向该空间的地址，需要用户指定该地址存储的数据类型，一般对返回指针进行强制类型转换
+
+calloc(num,size)
+-- 与malloc()函数的区别只在于, calloc()函数会在返回地址之前将所申请的内存空间中的每个字节都初始化为0
+
+realloc(ptr,size) -- 调整ptr指向的内存空间的大小
+-- ptr为需要调整的内存地址
+-- size为调整后需要的大小(字节数)
+
+#释放内存空间
+free(ptr)
+-- 只能用来释放动态开辟的空间，但是并不改变ptr的值，需要用户手动ptr=NULL，否则后续程序依旧可以通过ptr访问之前的空间
+-- 不能重复释放同一块内存空间
